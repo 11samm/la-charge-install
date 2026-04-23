@@ -1,0 +1,168 @@
+# LA Charge Install — Cursor Rules
+# Based on Master Operating System v1.0
+
+## Project Identity
+- **Business:** LA Charge Install — EV charger & electrical panel lead-gen site for the San Fernando Valley
+- **Model:** Referral/lead-gen only. We are NOT a contractor. We capture demand, qualify leads, and dispatch to a vetted C-10 contractor network.
+- **Domain:** lachargeinstall.com
+- **Tagline:** "Installed Right. In the Valley."
+
+---
+
+## Tech Stack (Non-Negotiable)
+- **Framework:** Next.js 15 with App Router — use Static Site Generation (SSG) for all 30 pages
+- **Styling:** Tailwind CSS v4 — utility-first only, no custom CSS files unless absolutely necessary
+- **Hosting:** Vercel — edge CDN, automatic HTTPS
+- **CMS:** Sanity.io (headless) — city pages and service content must be editable via Sanity
+- **Forms:** Custom Next.js API route (serverless) or Tally.so — no full-page reloads
+- **Analytics:** Vercel Analytics + Plausible — NO Google Analytics (CCPA compliance)
+- **Schema:** JSON-LD injected via Next.js `<Script>` component, never inline in HTML
+- **Images:** Always use `next/image` with explicit `width` and `height`. Format: WebP/AVIF. Hero image must have `fetchpriority="high"`.
+- **Fonts:** `next/font` (local) only — DM Sans (headings) + Inter (body). Zero FOUT.
+
+---
+
+## Performance Budget (Mobile — Must Maintain 100/100 PageSpeed)
+- FCP < 1.2s | LCP < 1.8s | TBT < 50ms | CLS < 0.05 | Speed Index < 2.0s
+- NO third-party scripts in `<head>` (no GTM, no chat widgets above the fold)
+- Tailwind CSS must be purged at build time — target < 8kb CSS bundle
+- Google Maps iframes must use `loading="lazy"`
+- Fonts must be preloaded with `rel="preload" as="font"`
+
+---
+
+## URL Structure — Core 30 Pages (Never Deviate)
+```
+/                                               ← Homepage
+/ev-charger-installation/                       ← EV Category Hub
+/ev-charger-installation/tesla-wall-connector/
+/ev-charger-installation/chargepoint-home-flex/
+/ev-charger-installation/emporia-ev-charger/
+/ev-charger-installation/juicebox-charger/
+/ev-charger-installation/level-2-charger/
+/ev-charger-installation/garage-ev-charger/
+/ev-charger-installation/outdoor-ev-charger/
+/ev-charger-installation/240v-outlet/
+/ev-charger-installation/permit-inspection/
+/ev-charger-installation/commercial/
+/electrical-panel-services/                     ← Panel Category Hub
+/electrical-panel-services/panel-upgrade/
+/electrical-panel-services/200-amp-upgrade/
+/electrical-panel-services/panel-modernization/
+/electrical-panel-services/sub-panel-installation/
+/electrical-panel-services/main-service-panel/
+/electrical-panel-services/ev-ready-panel/
+/electrical-panel-services/nema-14-50-outlet/
+/electrical-panel-services/panel-upgrade-cost/
+/how-it-works/
+/locations/ev-charger-installation-burbank/
+/locations/ev-charger-installation-glendale/
+/locations/ev-charger-installation-north-hollywood/
+/locations/ev-charger-installation-pasadena/
+/locations/ev-charger-installation-studio-city/
+/locations/ev-charger-installation-van-nuys/
+/locations/ev-charger-installation-encino/
+/locations/ev-charger-installation-northridge/
+/locations/ev-charger-installation-tujunga/     ← Bonus
+/locations/ev-charger-installation-la-canada-altadena/ ← Bonus (SCE area)
+```
+- Do NOT create pages outside this structure without explicit approval.
+- Do NOT add general electrical services (outlets, lighting, wiring) — entity scope is EV charging + panel upgrades only.
+
+---
+
+## Internal Linking Rules (Enforce on Every Page)
+- Every page must link to at least 3 other Core 30 pages.
+- **Service pages** → parent Category Hub + 2 related service pages + 1 city page
+- **City pages** → both Category Hubs + 3 relevant service pages
+- **Category Hubs** → all child service pages + 3 city pages
+- **Homepage** → both hubs + top 3 service pages + top 3 city pages
+
+---
+
+## Schema Markup Requirements
+- **Homepage + City Pages:** `LocalBusiness` schema with `areaServed`, `hasOfferCatalog`, `priceRange`
+- **Service Pages:** `Service` schema with `serviceType`, `provider`, `areaServed`, `offers.priceSpecification`
+- **All Pages:** `BreadcrumbList` + `FAQPage` (3–5 Q&A pairs targeting long-tail questions)
+- Schema must be valid JSON-LD. Always validate before shipping.
+
+---
+
+## Brand & Design System
+### Colors (Tailwind classes preferred)
+| Token | Hex | Tailwind |
+|---|---|---|
+| Primary Green (CTAs, buttons) | `#22C55E` | `green-500` |
+| Deep Green (headers, text) | `#15803D` | `green-700` |
+| Light Green (section backgrounds) | `#F0FDF4` | `green-50` |
+| Body Text | `#374151` | `gray-700` |
+| Card Borders / Backgrounds | `#F9FAFB` | `gray-50` |
+
+### Typography
+- `DM Sans` Bold 700 → H1/Display (tracking: -0.02em)
+- `DM Sans` SemiBold 600 → H2–H4
+- `Inter` Regular 400 → body (line-height: 1.6)
+- `JetBrains Mono` → pricing displays, technical specs only
+
+### Design Principles
+1. White backgrounds, generous padding — startup aesthetic
+2. Green is the ONLY brand color
+3. Trust signals above the fold: "Licensed Contractors · Verified Reviews · 4-Hour Response"
+4. Real photography only — no stock art
+5. Always show price ranges — transparency builds trust
+6. Subtle micro-animations on hover/form transitions (no heavy JS)
+
+---
+
+## Conversion & Lead Form Rules
+- Every page must have an above-fold CTA: "Get Your Free Estimate — 60 Seconds"
+- Secondary CTA: phone number (818 area code)
+- The Instant Estimate form is a **5-step multi-step flow** (no full page reload between steps):
+  1. Job type selector (EV Charger / Panel Upgrade / Both)
+  2. Address / zip (autocomplete)
+  3. Panel capacity (Yes 200A / No / Not Sure)
+  4. Timeline (ASAP / Within 1 Month / Just Researching)
+  5. Photo upload (optional) + contact capture (Name, Phone required; Email optional)
+- On submit: fire conversion event, show confirmation with estimated price range
+- Lead tiers: Platinum ($350–$400), Gold ($150–$250), Silver ($75–$100)
+- Phone is the primary required field — not email
+
+---
+
+## Lead Routing (Backend Logic)
+On form submit, trigger all four in parallel:
+1. Email to contractor assigned to user's zip (SendGrid)
+2. SMS to contractor (Twilio): name, phone, job type, zip
+3. Slack notification to #leads channel
+4. Log to Airtable: Name, Phone, Email, Job Type, Zip, Panel Photo URL, Timestamp, Contractor Assigned, Status
+
+---
+
+## Content Rules
+- **Panel service pages must always frame the service as EV-triggered.** "You need a panel upgrade because your EV charger requires it" — not as a standalone electrical service.
+- **City pages require hyper-local signals.** Every city page must include: utility provider name, specific rebate amount + program name, permit authority (city vs. LA County), at least one neighborhood-specific housing stock detail, and decade of construction where relevant.
+- **Utility map** (critical for differentiation — no competitor does this):
+  - Burbank → Burbank Water & Power (BWP) — up to $500 rebate
+  - Glendale → Glendale Water & Power (GWP) — $250 rebate
+  - Pasadena → Pasadena Water & Power (PWP) — EV Ready Rebate
+  - North Hollywood, Studio City, Van Nuys, Encino, Northridge, San Fernando, Highland Park, Sunland, Tujunga → LADWP — up to $500
+  - La Cañada Flintridge, Altadena → Southern California Edison (SCE) — different rebate program; permits through LA County DRP (not a city)
+- City page minimum word count: 800–1,200 words
+- All city pages must follow the H1/H2 content template from the Master OS (§5.3)
+- Do NOT create pages for: Load Calculation Service, Home Electrical Inspection, or any general electrical service
+
+---
+
+## NAP — Must Be Identical Everywhere (Footer, Schema, GBP)
+- Business Name: `LA Charge Install`
+- Phone: `(818) XXX-XXXX` (update when confirmed — must be 818 area code)
+- Schema type: `LocalBusiness` > `Electrician`
+
+---
+
+## What We Are NOT Building
+- No contractor-facing dashboard in Phase 1 (Phase 3 feature)
+- No live chat widget above the fold (kills PageSpeed)
+- No Google Analytics (use Plausible + Vercel Analytics)
+- No pages for general electrical work outside EV/panel scope
+- No dynamic rendering where SSG works — always prefer static
