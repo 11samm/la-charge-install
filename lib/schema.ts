@@ -54,6 +54,7 @@ export function localBusinessSchema(overrides?: {
     name: overrides?.name ?? siteConfig.name,
     description: overrides?.description ?? siteConfig.description,
     url: siteConfig.url,
+    image: `${siteConfig.url}/logos/main/main-logo.svg`,
     telephone: siteConfig.phoneDisplay,
     email: siteConfig.email,
     priceRange: '$$',
