@@ -86,7 +86,7 @@ export default function RootLayout({
           src="https://plausible.io/js/plausible.js"
           strategy="afterInteractive"
         />
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Analytics />
       </body>
     </html>
   )
