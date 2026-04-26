@@ -70,16 +70,17 @@ export function ScrollAwareHeaderBranding({
       {/* Mobile: logo + title; CTA is absolutely centered in the middle band (stable vs flex/grid + scrollbar shifts) */}
       <div className={cn("flex min-w-0 flex-1 items-center gap-2 py-1 lg:hidden", linkClassName)}>
         <Link href="/" className="shrink-0" onClick={onNavigate} aria-label="Home">
-          <BrandLogo className={cn("h-9 w-auto shrink-0", logoClassName)} priority={priority} />
+          <BrandLogo className={cn("h-8 w-auto shrink-0 sm:h-9", logoClassName)} priority={priority} />
         </Link>
 
-        <div className="relative min-h-10 min-w-0 flex-1">
+        <div className="relative min-h-9 min-w-0 flex-1">
           <Link
             href="/"
             onClick={onNavigate}
             className={cn(
-              siteNameClasses,
-              "block w-full min-w-0 truncate text-left transition-opacity duration-300 ease-out",
+              "block w-full min-w-0 text-left font-sans text-sm font-semibold leading-snug tracking-tight text-foreground [font-kerning:normal] sm:text-base",
+              "whitespace-normal break-words [overflow-wrap:anywhere] line-clamp-2",
+              "transition-opacity duration-300 ease-out",
               heroCtaHidden ? "pointer-events-none opacity-0" : "opacity-100",
             )}
             tabIndex={heroCtaHidden ? -1 : 0}
