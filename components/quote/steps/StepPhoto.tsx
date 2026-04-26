@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Upload } from 'lucide-react'
 
+import { FormTrustCta } from '@/components/quote/FormTrustCta'
 import { cn } from '@/lib/utils'
 
 import type { WizardState } from '../types'
@@ -16,19 +17,23 @@ export function StepPhoto({
   onFieldUpdate,
   onNext,
   onBack,
+  variant = 'standalone',
 }: {
   photos: File[]
   mlTrainingConsent: boolean
   onFieldUpdate: (p: Partial<WizardState>) => void
   onNext: (p: Partial<WizardState>) => void
   onBack: () => void
+  /** `embedded`: content only (used inside StepInfo). */
+  variant?: 'standalone' | 'embedded'
 }) {
   const [drag, setDrag] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const embedded = variant === 'embedded'
 
   useEffect(() => {
-    headingRef.current?.focus()
-  }, [])
+    if (!embedded) headingRef.current?.focus()
+  }, [embedded])
 
   const addFiles = useCallback(
     (list: File[]) => {
@@ -45,21 +50,34 @@ export function StepPhoto({
     onFieldUpdate({ photos: photos.filter((_, i) => i !== index) })
   }
 
+  const titleId = embedded ? 'photo-section-heading' : 'step-heading'
+  const canContinueWithPhotos = photos.length === 0 || mlTrainingConsent
+
   return (
-    <div className="space-y-6 py-8 px-4 sm:py-12 sm:px-0">
+    <div className={cn('space-y-6', !embedded && 'px-4 py-8 sm:px-0 sm:py-12')}>
       <fieldset>
         <legend className="sr-only">Add photos of your panel area</legend>
-        <h2
-          ref={headingRef}
-          id="step-heading"
-          tabIndex={-1}
-          className="text-2xl font-bold text-gray-900 [font-family:var(--font-dm-sans),var(--font-heading),ui-sans-serif,system-ui,sans-serif]"
-        >
-          Add photos of your panel area
-        </h2>
-        <p className="mt-2 text-base text-gray-500">
-          Add one photo from about 10 feet away showing the general area and one close-up of the panel so we can
-          read the label and breaker text.
+        {!embedded && (
+          <h2
+            ref={headingRef}
+            id="step-heading"
+            tabIndex={-1}
+            className="text-2xl font-bold text-gray-900 [font-family:var(--font-dm-sans),var(--font-heading),ui-sans-serif,system-ui,sans-serif]"
+          >
+            Add photos of your panel area
+          </h2>
+        )}
+        {embedded && (
+          <h3
+            id={titleId}
+            className="text-lg font-semibold text-gray-900 [font-family:var(--font-dm-sans),var(--font-heading),ui-sans-serif,system-ui,sans-serif]"
+          >
+            Add photos of your panel area
+          </h3>
+        )}
+        <p className={cn('text-base text-gray-500', embedded ? 'mt-2' : 'mt-2')}>
+          Add one photo from about 10 feet away showing the general area and one close-up of the panel so we can read
+          the label and breaker text.
         </p>
 
         <div
@@ -77,7 +95,7 @@ export function StepPhoto({
             addFiles(Array.from(e.dataTransfer.files))
           }}
           className={cn(
-            'relative mt-8 flex min-h-40 items-center justify-center rounded-xl border-2 border-dashed transition-colors',
+            'relative mt-6 flex min-h-40 items-center justify-center rounded-xl border-2 border-dashed transition-colors',
             drag ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'
           )}
         >
@@ -128,37 +146,59 @@ export function StepPhoto({
             aria-describedby="ml-training-hint"
           />
           <span className="leading-relaxed" id="ml-training-hint">
-            <span className="font-semibold text-slate-900"></span> Allow anonymized project data to train our matching recommendations.{' '}
+            Allow anonymized project data to train our matching recommendations.{' '}
           </span>
         </label>
       </fieldset>
 
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => onNext({})}
-          className="flex h-14 w-full items-center justify-center rounded-xl bg-green-500 text-base font-semibold text-white transition-colors hover:bg-green-600"
-        >
-          Continue →
-        </button>
-        <button
-          type="button"
-          onClick={() => onNext({})}
-          className="w-full text-center text-sm font-medium text-gray-600 underline-offset-2 hover:underline"
-        >
-          Skip for now — the electrician can assess on the call.
-        </button>
-      </div>
+      {!embedded && (
+        <>
+          <FormTrustCta />
+          {photos.length > 0 && !mlTrainingConsent && (
+            <p className="text-sm text-gray-600" role="status">
+              Check "Allow anonymized project data…" above to continue with your photos.
+            </p>
+          )}
+          <div className="space-y-3">
+            <button
+              type="button"
+              aria-disabled={!canContinueWithPhotos}
+              onClick={() => {
+                if (!canContinueWithPhotos) return
+                onNext({})
+              }}
+              className={cn(
+                'flex h-14 w-full items-center justify-center rounded-xl text-base font-semibold transition-colors',
+                canContinueWithPhotos
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'cursor-not-allowed bg-gray-200 text-gray-400 opacity-40'
+              )}
+            >
+              Continue →
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onFieldUpdate({ photos: [], mlTrainingConsent: false })
+                onNext({})
+              }}
+              className="w-full text-center text-sm font-medium text-gray-600 underline-offset-2 hover:underline"
+            >
+              Skip for now — the electrician can assess on the call.
+            </button>
+          </div>
 
-      <div className="pt-2">
-        <button
-          type="button"
-          onClick={onBack}
-          className="min-h-12 text-sm font-medium text-gray-600 underline-offset-2 hover:underline"
-        >
-          ← Back
-        </button>
-      </div>
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={onBack}
+              className="min-h-12 text-sm font-medium text-gray-600 underline-offset-2 hover:underline"
+            >
+              ← Back
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

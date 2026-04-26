@@ -77,7 +77,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background">
-      <body className={`${sora.variable} ${dmSans.variable} ${dmMono.variable} font-sans antialiased`}>
+      <body
+        className={`${sora.variable} ${dmSans.variable} ${dmMono.variable} max-w-full overflow-x-hidden font-sans antialiased`}
+      >
         <JsonLd id="local-business-schema" data={localBusinessSchema()} />
         <MainChrome>{children}</MainChrome>
         <Script

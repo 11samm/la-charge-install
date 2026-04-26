@@ -33,7 +33,7 @@ const evServices: ServicePage[] = [
     shortTitle: 'Tesla Wall Connector',
     h1: 'Tesla Wall Connector Installation in Los Angeles',
     description:
-      'Fast, code-compliant Tesla Wall Connector installations for San Fernando Valley homes—expert site assessment, permits, and panel coordination from licensed electricians.',
+      'Code-compliant installations, site assessments, and permit handling by licensed electricians.',
     targetKeyword: 'tesla wall connector installation los angeles',
     minPrice: 800,
     maxPrice: 1800,
@@ -80,7 +80,7 @@ const evServices: ServicePage[] = [
     shortTitle: 'ChargePoint Home Flex',
     h1: 'ChargePoint Home Flex Installation in Los Angeles',
     description:
-      'Licensed ChargePoint Home Flex installation with amperage settings matched to your panel, clear pricing, and help navigating local permits and utility rebates.',
+      'Amperage-matched install with permit and utility rebate guidance built in.',
     targetKeyword: 'chargepoint home flex install burbank',
     minPrice: 800,
     maxPrice: 1700,
@@ -127,7 +127,7 @@ const evServices: ServicePage[] = [
     shortTitle: 'Emporia EV Charger',
     h1: 'Emporia EV Charger Installation in Los Angeles',
     description:
-      'Reliable Emporia smart charger installation in the San Fernando Valley—fair pricing, licensed electricians, and honest answers about your panel and rebates.',
+      'Smart charging at a practical price—licensed install, honest panel review, rebate-ready.',
     targetKeyword: 'emporia ev charger installation san fernando valley',
     minPrice: 750,
     maxPrice: 1600,
@@ -506,7 +506,7 @@ const panelServices: ServicePage[] = [
     shortTitle: 'Panel Upgrade',
     h1: 'Electrical Panel Upgrade for EV Charging in Los Angeles',
     description:
-      'Electrical panel upgrades sized for home EV charging—more capacity, modern breakers, and a safe path to a dedicated Level 2 circuit.',
+      "Expand your home's capacity with modern breakers for safe, dedicated Level 2 charging.",
     targetKeyword: 'electrical panel upgrade los angeles',
     minPrice: 2000,
     maxPrice: 6000,
@@ -553,7 +553,7 @@ const panelServices: ServicePage[] = [
     shortTitle: '200 Amp Upgrade',
     h1: '200 Amp Panel Upgrade for EV Charging in Los Angeles',
     description:
-      '200-amp electrical service and panel upgrades for EV-ready homes—room for today’s Level 2 load and tomorrow’s second EV or all-electric appliances.',
+      "Future-proof your electrical service for today's EV load and tomorrow's second vehicle.",
     targetKeyword: '200 amp panel upgrade cost los angeles',
     minPrice: 2500,
     maxPrice: 6500,
@@ -600,7 +600,7 @@ const panelServices: ServicePage[] = [
     shortTitle: 'Panel Modernization',
     h1: 'Panel Modernization for FPE and Zinsco Panels in Los Angeles',
     description:
-      'Replace Federal Pacific, Zinsco, and other obsolete panels—especially when you are adding EV load that legacy equipment cannot carry safely.',
+      'Replace outdated Federal Pacific or Zinsco panels before sustained EV load exposes the risk.',
     targetKeyword: 'FPE stab-lok panel replacement los angeles',
     minPrice: 2500,
     maxPrice: 7000,

@@ -48,14 +48,20 @@ export default function Home() {
               </p>
               <div className="mt-8 grid gap-4">
                 {serviceGroups.ev.slice(0, 3).map((service) => (
-                  <Link
+                  <div
                     key={service.slug}
-                    href={`/ev-charger-installation/${service.slug}`}
-                    className="rounded-2xl border bg-background p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+                    className="group cursor-pointer rounded-2xl border bg-background p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
                   >
                     <h3 className="text-xl font-semibold tracking-tight">{service.shortTitle}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
-                  </Link>
+                    <Link
+                      href={`/ev-charger-installation/${service.slug}`}
+                      className="mt-3 inline-flex items-center text-sm font-medium text-primary group-hover:text-primary/80"
+                      aria-label={`View details: ${service.shortTitle}`}
+                    >
+                      View Details →
+                    </Link>
+                  </div>
                 ))}
               </div>
             </div>
@@ -69,14 +75,20 @@ export default function Home() {
               </p>
               <div className="mt-8 grid gap-4">
                 {serviceGroups.panel.slice(0, 3).map((service) => (
-                  <Link
+                  <div
                     key={service.slug}
-                    href={`/electrical-panel-services/${service.slug}`}
-                    className="rounded-2xl border bg-background p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+                    className="group cursor-pointer rounded-2xl border bg-background p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
                   >
                     <h3 className="text-xl font-semibold tracking-tight">{service.shortTitle}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
-                  </Link>
+                    <Link
+                      href={`/electrical-panel-services/${service.slug}`}
+                      className="mt-3 inline-flex items-center text-sm font-medium text-primary group-hover:text-primary/80"
+                      aria-label={`View details: ${service.shortTitle}`}
+                    >
+                      View Details →
+                    </Link>
+                  </div>
                 ))}
               </div>
             </div>

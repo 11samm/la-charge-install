@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 
+import { FormTrustCta } from '@/components/quote/FormTrustCta'
 import { formatPhoneUs, isValidOptionalEmail, phoneDigitsOnly } from '@/lib/phone-format'
+import { cn } from '@/lib/utils'
+
 import type { WizardState } from '../types'
 
 function isRequiredEmail(value: string): boolean {
@@ -42,7 +45,7 @@ export function StepContact({
   const canSubmit = nameOk && phoneOk && emailOk && !isSubmitting
 
   return (
-    <div className="space-y-6 py-8 px-4 sm:py-12 sm:px-0">
+    <div className="space-y-6 px-4 py-8 sm:px-0 sm:py-12">
       <fieldset>
         <legend className="sr-only">Who should we contact?</legend>
         <h2
@@ -120,8 +123,7 @@ export function StepContact({
         </div>
 
         <p className="mt-4 text-xs text-gray-400">
-          By submitting, you agree to be contacted by our licensed contractor network about your project. We
-          never share your info with more than 3 contractors.
+          By submitting, you agree to be contacted by our licensed contractor network about your project.
         </p>
       </fieldset>
 
@@ -130,6 +132,8 @@ export function StepContact({
           {errorMessage}
         </p>
       )}
+
+      <FormTrustCta />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
@@ -143,7 +147,11 @@ export function StepContact({
           type="button"
           disabled={!canSubmit}
           onClick={onSubmit}
-          className="flex h-14 w-full min-w-[200px] items-center justify-center gap-2 rounded-xl bg-green-500 text-base font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(
+            'flex h-14 w-full min-w-[200px] items-center justify-center gap-2 rounded-xl text-base font-semibold transition-colors',
+            'bg-green-600 text-white hover:bg-green-700',
+            'disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400'
+          )}
         >
           {isSubmitting && <Loader2 className="size-5 animate-spin" aria-hidden />}
           {isSubmitting ? 'Submitting…' : 'Get My Estimate →'}

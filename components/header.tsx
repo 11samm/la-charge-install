@@ -1,22 +1,21 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 
-import { BrandLogo } from '@/components/brand-logo'
+import { MobileNav } from '@/components/mobile-nav'
+import { ScrollAwareHeaderBranding } from '@/components/scroll-aware-header-branding'
 import { Button } from '@/components/ui/button'
 import { evServiceLinks, hubPages, locationLinks, panelServiceLinks } from '@/lib/routes'
-import { siteConfig } from '@/lib/site'
 
 export function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex min-h-16 items-center justify-between gap-6 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
-          <BrandLogo className="h-9 w-auto shrink-0" priority />
-          <div>
-            <span className="block text-lg font-semibold tracking-tight">{siteConfig.name}</span>
-            <span className="hidden text-xs text-muted-foreground md:block">{siteConfig.tagline}</span>
-          </div>
-        </Link>
+    <header className="fixed inset-x-0 top-0 z-[100] w-full max-w-full border-b border-border bg-background pt-[env(safe-area-inset-top,0px)] pr-[var(--layout-scrollbar-pad)] shadow-sm [transform:translateZ(0)]">
+      <div className="container mx-auto flex min-h-16 max-w-full items-stretch justify-between gap-3 px-4 py-2 sm:gap-4 sm:py-3">
+        <ScrollAwareHeaderBranding priority freezeScrollCtaObserver={mobileMenuOpen} />
 
         <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
           {hubPages.slice(1).map((page) => (
@@ -29,10 +28,11 @@ export function Header() {
           <NavMenu title="Service Areas" links={locationLinks} />
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Button variant="outline" asChild>
+        <div className="flex shrink-0 items-center self-stretch justify-end gap-2 sm:gap-3">
+          <Button variant="outline" asChild className="hidden lg:inline-flex">
             <Link href="/get-a-quote">Get Estimate</Link>
           </Button>
+          <MobileNav onOpenChange={setMobileMenuOpen} />
         </div>
       </div>
     </header>

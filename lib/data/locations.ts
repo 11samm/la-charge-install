@@ -24,7 +24,7 @@ export const locations: LocationPage[] = [
     city: 'Burbank',
     h1: 'EV Charger Installation in Burbank, CA',
     description:
-      'Burbank EV charger installation with Burbank Water & Power rebate context, permit-aware estimates, and panel-upgrade guidance for older homes.',
+      'Permit-aware estimates and panel-upgrade guidance tailored for older homes.',
     targetKeyword: 'ev charger installation burbank ca',
     utility: 'Burbank Water & Power (BWP)',
     rebateProgram: 'BWP EV Charger Rebate',
@@ -59,7 +59,7 @@ export const locations: LocationPage[] = [
     city: 'Glendale',
     h1: 'EV Charger Installation in Glendale, CA',
     description:
-      'Glendale EV charger installation with Glendale Water & Power rebate guidance, hillside install context, and EV-triggered panel upgrade expertise.',
+      'Hillside and exterior runs where weatherproofing and longer conduit are part of a realistic scope.',
     targetKeyword: 'ev charger installation glendale ca',
     utility: 'Glendale Water & Power (GWP)',
     rebateProgram: 'GWP EV Charger Rebate',
@@ -95,7 +95,7 @@ export const locations: LocationPage[] = [
     city: 'North Hollywood',
     h1: 'EV Charger Installation in North Hollywood, CA',
     description:
-      'North Hollywood EV charger installation with LADWP rebate context, condo and single-family use cases, and fast estimate routing.',
+      'Single-family, condos, and mixed-use—parking access and the right permit path before trucks roll.',
     targetKeyword: 'ev charger install north hollywood',
     utility: 'LADWP',
     rebateProgram: 'LADWP EV Charger Rebate',
@@ -130,7 +130,7 @@ export const locations: LocationPage[] = [
     city: 'Pasadena',
     h1: 'EV Charger Installation in Pasadena, CA',
     description:
-      'Pasadena EV charger installation with Pasadena Water & Power rebate guidance, historic-home panel insights, and permit-aware estimates.',
+      'Historic and Craftsman stock—permit-aware estimates when undersized service shows up early.',
     targetKeyword: 'ev charger installation pasadena ca',
     utility: 'Pasadena Water & Power (PWP)',
     rebateProgram: 'PWP EV Ready Rebate',
@@ -166,7 +166,7 @@ export const locations: LocationPage[] = [
     city: 'Studio City',
     h1: 'EV Charger Installation in Studio City, CA',
     description:
-      'Studio City EV charger installation with LADWP rebate context, Tesla Wall Connector expertise, and hillside-ready installation options.',
+      'Hillside Wall Connector and outdoor routes—quotes that match real wire paths, not best-case numbers.',
     targetKeyword: 'ev charger installation studio city',
     utility: 'LADWP',
     rebateProgram: 'LADWP EV Charger Rebate',
@@ -202,7 +202,7 @@ export const locations: LocationPage[] = [
     city: 'Van Nuys',
     h1: 'EV Charger Installation in Van Nuys, CA',
     description:
-      'Van Nuys EV charger installation with LADWP rebate guidance, residential and commercial property support, and fast estimate routing.',
+      'Homes, apartments, and small commercial—routing and panel access scoped to the property type.',
     targetKeyword: 'ev charger installation van nuys',
     utility: 'LADWP',
     rebateProgram: 'LADWP EV Charger Rebate',
@@ -237,7 +237,7 @@ export const locations: LocationPage[] = [
     city: 'Encino',
     h1: 'EV Charger Installation in Encino, CA',
     description:
-      'Encino EV charger installation with LADWP rebate context and EV-ready panel upgrade options for older single-family homes.',
+      'Large-lot, 60s–70s panels common—EV-ready options when the garage outpaces the main service.',
     targetKeyword: 'ev charger installation encino ca',
     utility: 'LADWP',
     rebateProgram: 'LADWP EV Charger Rebate',
@@ -272,7 +272,7 @@ export const locations: LocationPage[] = [
     city: 'Northridge',
     h1: 'EV Charger Installation in Northridge, CA',
     description:
-      'Northridge EV charger installation with LADWP rebate context, post-retrofit housing stock, and practical EV-readiness guidance.',
+      'Post-quake builds to mid-century—diagnostics first so you upgrade only when the load math says so.',
     targetKeyword: 'ev charger installation northridge ca',
     utility: 'LADWP',
     rebateProgram: 'LADWP EV Charger Rebate',
@@ -308,7 +308,7 @@ export const locations: LocationPage[] = [
     city: 'Tujunga & Sunland',
     h1: 'EV Charger Installation in Tujunga and Sunland, CA',
     description:
-      'Tujunga and Sunland EV charger installation with LADWP rebate context, foothill property nuances, and panel-upgrade guidance for older homes.',
+      'Foothill lots and detached structures—longer runs, sub-panels, and older stock priced as real distance.',
     targetKeyword: 'ev charger installation tujunga sunland',
     utility: 'LADWP',
     rebateProgram: 'LADWP EV Charger Rebate',
@@ -344,7 +344,7 @@ export const locations: LocationPage[] = [
     city: 'La Cañada Flintridge & Altadena',
     h1: 'EV Charger Installation in La Cañada Flintridge and Altadena, CA',
     description:
-      'La Cañada Flintridge and Altadena EV charger installation with SCE rebate context, LA County permitting notes, and premium hillside-home positioning.',
+      'SCE and LA County DRP—permit and program context for hillside custom homes outside LADWP.',
     targetKeyword: 'ev charger installation la canada flintridge',
     utility: 'Southern California Edison (SCE)',
     rebateProgram: 'SCE EV program',

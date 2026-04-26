@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { CheckCircle2 } from 'lucide-react'
 
+import { FormTrustCta } from '@/components/quote/FormTrustCta'
 import { cn } from '@/lib/utils'
 
 import type { PanelCapacity, WizardState } from '../types'
@@ -28,14 +30,16 @@ export function StepPanel({
   onNext: (p: Partial<WizardState>) => void
   onBack: () => void
 }) {
+  const [attempted, setAttempted] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const canProceed = panelCapacity !== ''
 
   useEffect(() => {
     headingRef.current?.focus()
   }, [])
 
   return (
-    <div className="space-y-6 py-8 px-4 sm:py-12 sm:px-0">
+    <div className="space-y-6 px-4 py-8 sm:px-0 sm:py-12">
       <fieldset>
         <legend className="sr-only">What size is your electrical panel?</legend>
         <h2
@@ -60,21 +64,32 @@ export function StepPanel({
                 aria-pressed={selected}
                 onClick={() => onFieldUpdate({ panelCapacity: value })}
                 className={cn(
-                  'flex min-h-16 w-full flex-col items-start justify-center rounded-xl border-2 px-4 py-3 text-left transition-colors',
+                  'flex min-h-16 w-full items-center justify-between gap-2 rounded-xl border-2 px-4 py-3 text-left transition-colors',
                   selected
                     ? 'border-green-500 bg-green-50 ring-2 ring-green-500/20'
                     : 'border-gray-200 bg-white hover:border-green-300'
                 )}
               >
-                <span className="text-base font-medium text-gray-900">{label}</span>
-                <span className="text-sm text-gray-500">{hint}</span>
+                <span>
+                  <span className="block text-base font-medium text-gray-900">{label}</span>
+                  <span className="block text-sm text-gray-500">{hint}</span>
+                </span>
+                {selected && <CheckCircle2 className="size-5 shrink-0 text-green-600" aria-hidden />}
               </button>
             )
           })}
         </div>
       </fieldset>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {attempted && !canProceed && (
+        <p className="text-sm font-medium text-red-600" role="alert">
+          Please select an option to continue.
+        </p>
+      )}
+
+      <FormTrustCta />
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <button
           type="button"
           onClick={onBack}
@@ -84,9 +99,18 @@ export function StepPanel({
         </button>
         <button
           type="button"
-          disabled={panelCapacity === ''}
-          onClick={() => onNext({})}
-          className="h-14 w-full max-w-sm self-end rounded-xl bg-green-500 text-base font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[200px]"
+          aria-disabled={!canProceed}
+          onClick={() => {
+            if (!canProceed) {
+              setAttempted(true)
+              return
+            }
+            onNext({})
+          }}
+          className={cn(
+            'h-14 w-full self-end rounded-xl text-base font-semibold transition-colors sm:min-w-[200px] sm:max-w-sm',
+            canProceed ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-200 text-gray-400'
+          )}
         >
           Next →
         </button>

@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { Building2, Home, HousePlus } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Building2, CheckCircle2, Home, HousePlus } from 'lucide-react'
 
+import { FormTrustCta } from '@/components/quote/FormTrustCta'
 import { cn } from '@/lib/utils'
 
 import type { PropertyType, WizardState } from '../types'
@@ -29,14 +30,16 @@ export function StepPropertyType({
   onNext: (p: Partial<WizardState>) => void
   onBack: () => void
 }) {
+  const [attempted, setAttempted] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const canProceed = propertyType !== ''
 
   useEffect(() => {
     headingRef.current?.focus()
   }, [])
 
   return (
-    <div className="space-y-6 py-8 px-4 sm:py-12 sm:px-0">
+    <div className="space-y-6 px-4 py-8 sm:px-0 sm:py-12">
       <fieldset>
         <legend className="sr-only">What type of property?</legend>
         <h2
@@ -61,26 +64,37 @@ export function StepPropertyType({
                 aria-pressed={selected}
                 onClick={() => onFieldUpdate({ propertyType: value })}
                 className={cn(
-                  'flex min-h-20 w-full items-center gap-4 rounded-xl border-2 px-4 py-3 text-left transition-colors',
+                  'flex min-h-20 w-full items-center justify-between gap-4 rounded-xl border-2 px-4 py-3 text-left transition-colors',
                   selected
                     ? 'border-green-500 bg-green-50 ring-2 ring-green-500/20'
                     : 'border-gray-200 bg-white hover:border-green-300'
                 )}
               >
-                <div className="flex size-10 shrink-0 items-center justify-center text-green-700">
-                  <Icon className="size-6" strokeWidth={2} />
+                <div className="flex min-w-0 items-center gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center text-green-700">
+                    <Icon className="size-6" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <div className="text-lg font-semibold text-gray-900">{label}</div>
+                    <div className="text-sm text-gray-500">{hint}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-lg font-semibold text-gray-900">{label}</div>
-                  <div className="text-sm text-gray-500">{hint}</div>
-                </div>
+                {selected && <CheckCircle2 className="size-5 shrink-0 text-green-600" aria-hidden />}
               </button>
             )
           })}
         </div>
       </fieldset>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {attempted && !canProceed && (
+        <p className="text-sm font-medium text-red-600" role="alert">
+          Please select an option to continue.
+        </p>
+      )}
+
+      <FormTrustCta />
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <button
           type="button"
           onClick={onBack}
@@ -90,9 +104,18 @@ export function StepPropertyType({
         </button>
         <button
           type="button"
-          disabled={propertyType === ''}
-          onClick={() => onNext({})}
-          className="h-14 w-full max-w-sm self-end rounded-xl bg-green-500 text-base font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[200px]"
+          aria-disabled={!canProceed}
+          onClick={() => {
+            if (!canProceed) {
+              setAttempted(true)
+              return
+            }
+            onNext({})
+          }}
+          className={cn(
+            'h-14 w-full self-end rounded-xl text-base font-semibold transition-colors sm:min-w-[200px] sm:max-w-sm',
+            canProceed ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-200 text-gray-400'
+          )}
         >
           Next →
         </button>

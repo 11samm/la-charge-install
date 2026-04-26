@@ -1,94 +1,99 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { phoneDigitsOnly } from '@/lib/phone-format'
+import { setStoredQuoteConfirmation } from '@/lib/quote-confirmation-storage'
 import { siteConfig } from '@/lib/site'
 
-import { ConfirmationScreen } from './ConfirmationScreen'
 import { ProgressBar } from './ProgressBar'
 import { StepWrapper } from './StepWrapper'
-import { StepAddress } from './steps/StepAddress'
-import { StepChargerLocation } from './steps/StepChargerLocation'
+import { StepChargerPlacement } from './steps/StepChargerPlacement'
 import { StepContact } from './steps/StepContact'
-import { StepGarageSituation } from './steps/StepGarageSituation'
+import { StepElectricalPanel } from './steps/StepElectricalPanel'
+import { StepInfo } from './steps/StepInfo'
 import { StepJobType } from './steps/StepJobType'
-import { StepPanel } from './steps/StepPanel'
-import { StepPanelLocation } from './steps/StepPanelLocation'
-import { StepPhoto } from './steps/StepPhoto'
-import { StepPropertyType } from './steps/StepPropertyType'
-import { StepTimeline } from './steps/StepTimeline'
-import type { ConfirmationPayload, WizardState } from './types'
+import { StepProperty } from './steps/StepProperty'
+import type { ConfirmationPayload, JobType, WizardState } from './types'
 import { initialWizardState } from './types'
 
-type VisibleStepId =
-  | 'jobType'
-  | 'propertyType'
-  | 'address'
-  | 'panel'
-  | 'panelLocation'
-  | 'garageSituation'
-  | 'chargerLocation'
-  | 'timeline'
-  | 'photo'
-  | 'contact'
-
-type StepId = VisibleStepId | 'confirmation'
+type StepId = 'service' | 'property' | 'panel' | 'placement' | 'info' | 'contact'
 
 const defaultErr = `Something went wrong — please try again or call us at ${siteConfig.phoneDisplay}`
 
+function needsChargerPath(jobType: JobType): boolean {
+  return jobType === 'charger' || jobType === 'both'
+}
+
+function getSteps(jobType: JobType): StepId[] {
+  if (needsChargerPath(jobType)) {
+    return ['service', 'property', 'panel', 'placement', 'info', 'contact']
+  }
+  return ['service', 'property', 'panel', 'info', 'contact']
+}
+
+/** Segments before thank-you: 5 if EV/charger+both, 4 if panel-only; default 5 before a service is chosen. */
+function getProgressTotal(jobType: JobType): number {
+  if (jobType === '') return 5
+  return needsChargerPath(jobType) ? 5 : 4
+}
+
+function getProgressDisplayStep(step: StepId, steps: StepId[]): number {
+  const effective: StepId = step === 'contact' ? 'info' : step
+  const idx = steps.indexOf(effective)
+  return idx >= 0 ? idx + 1 : 1
+}
+
 export function QuoteWizard() {
+  const router = useRouter()
   const [wizardState, setWizardState] = useState<WizardState>(initialWizardState)
-  const [step, setStep] = useState<StepId>('jobType')
+  const [step, setStep] = useState<StepId>('service')
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [result, setResult] = useState<ConfirmationPayload | null>(null)
 
-  const visibleSteps = useMemo<VisibleStepId[]>(() => {
-    const requiresChargerDetails = wizardState.jobType === 'charger' || wizardState.jobType === 'both'
+  const stepRef = useRef(step)
+  stepRef.current = step
 
-    return [
-      'jobType',
-      'propertyType',
-      'address',
-      'panel',
-      'panelLocation',
-      ...(requiresChargerDetails ? (['garageSituation', 'chargerLocation'] as const) : []),
-      'timeline',
-      'photo',
-      'contact',
-    ]
+  const steps = useMemo(() => getSteps(wizardState.jobType), [wizardState.jobType])
+  const totalSteps = useMemo(() => getProgressTotal(wizardState.jobType), [wizardState.jobType])
+  const currentStepNumber = useMemo(() => getProgressDisplayStep(step, steps), [step, steps])
+
+  useEffect(() => {
+    const route = getSteps(wizardState.jobType)
+    setStep((current) => (route.includes(current) ? current : 'panel'))
   }, [wizardState.jobType])
-
-  const currentStepNumber = step === 'confirmation' ? 0 : visibleSteps.indexOf(step) + 1
-  const totalSteps = visibleSteps.length
 
   const onFieldUpdate = useCallback((partial: Partial<WizardState>) => {
     setWizardState((prev) => ({ ...prev, ...partial }))
   }, [])
 
   const handleNext = useCallback((partial: Partial<WizardState> = {}) => {
-    setWizardState((prev) => ({ ...prev, ...partial }))
-    setDirection('forward')
-    setStep((currentStep) => {
-      if (currentStep === 'confirmation') return currentStep
-
-      const currentIndex = visibleSteps.indexOf(currentStep)
-      return visibleSteps[currentIndex + 1] ?? currentStep
+    setWizardState((prev) => {
+      const merged = { ...prev, ...partial }
+      const route = getSteps(merged.jobType)
+      const idx = route.indexOf(stepRef.current)
+      const nextStep = route[idx + 1]
+      if (nextStep) {
+        queueMicrotask(() => {
+          setDirection('forward')
+          setStep(nextStep)
+        })
+      }
+      return merged
     })
-  }, [visibleSteps])
+  }, [])
 
   const handleBack = useCallback(() => {
     setSubmitError(null)
     setDirection('backward')
     setStep((currentStep) => {
-      if (currentStep === 'confirmation') return currentStep
-
-      const currentIndex = visibleSteps.indexOf(currentStep)
-      return visibleSteps[Math.max(0, currentIndex - 1)] ?? 'jobType'
+      const route = getSteps(wizardState.jobType)
+      const idx = route.indexOf(currentStep)
+      return route[Math.max(0, idx - 1)] ?? 'service'
     })
-  }, [visibleSteps])
+  }, [wizardState.jobType])
 
   const handleSubmit = useCallback(async () => {
     setSubmitError(null)
@@ -126,7 +131,7 @@ export function QuoteWizard() {
         return
       }
       const payload = data as ConfirmationPayload
-      setResult(payload)
+      setStoredQuoteConfirmation({ result: payload, name: wizardState.name.trim() })
       console.log('[conversion] instant_estimate_submitted', {
         jobType: wizardState.jobType,
         propertyType: wizardState.propertyType,
@@ -140,47 +145,31 @@ export function QuoteWizard() {
         mlTrainingConsent: wizardState.mlTrainingConsent,
         tier: payload.tier,
       })
-      setStep('confirmation')
+      router.push('/get-a-quote/thank-you')
     } catch {
       setSubmitError(defaultErr)
     } finally {
       setIsSubmitting(false)
     }
-  }, [wizardState])
-
-  if (step === 'confirmation' && result) {
-    return <ConfirmationScreen result={result} name={wizardState.name} />
-  }
+  }, [router, wizardState])
 
   return (
     <div className="mx-auto w-full max-w-lg">
       <h1 className="sr-only">Get Your Free EV Charger Installation Estimate</h1>
-      {step !== 'confirmation' && <ProgressBar step={currentStepNumber} total={totalSteps} />}
+      <ProgressBar step={currentStepNumber} total={totalSteps} />
 
       <p className="sr-only" role="status" aria-live="polite" aria-atomic>
-        {step === 'confirmation' ? 'Confirmation screen' : `Step ${currentStepNumber} of ${totalSteps}`}
+        {`Step ${currentStepNumber} of ${totalSteps}`}
       </p>
 
       <StepWrapper step={step} direction={direction}>
-        {step === 'jobType' && (
-          <StepJobType
-            jobType={wizardState.jobType}
-            onFieldUpdate={onFieldUpdate}
-            onNext={handleNext}
-          />
+        {step === 'service' && (
+          <StepJobType jobType={wizardState.jobType} onFieldUpdate={onFieldUpdate} onNext={handleNext} />
         )}
 
-        {step === 'propertyType' && (
-          <StepPropertyType
+        {step === 'property' && (
+          <StepProperty
             propertyType={wizardState.propertyType}
-            onFieldUpdate={onFieldUpdate}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        )}
-
-        {step === 'address' && (
-          <StepAddress
             address={wizardState.address}
             zipCode={wizardState.zipCode}
             onFieldUpdate={onFieldUpdate}
@@ -190,16 +179,8 @@ export function QuoteWizard() {
         )}
 
         {step === 'panel' && (
-          <StepPanel
+          <StepElectricalPanel
             panelCapacity={wizardState.panelCapacity}
-            onFieldUpdate={onFieldUpdate}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        )}
-
-        {step === 'panelLocation' && (
-          <StepPanelLocation
             panelLocation={wizardState.panelLocation}
             onFieldUpdate={onFieldUpdate}
             onNext={handleNext}
@@ -207,17 +188,9 @@ export function QuoteWizard() {
           />
         )}
 
-        {step === 'garageSituation' && (
-          <StepGarageSituation
+        {step === 'placement' && (
+          <StepChargerPlacement
             garageSituation={wizardState.garageSituation}
-            onFieldUpdate={onFieldUpdate}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        )}
-
-        {step === 'chargerLocation' && (
-          <StepChargerLocation
             chargerLocation={wizardState.chargerLocation}
             onFieldUpdate={onFieldUpdate}
             onNext={handleNext}
@@ -225,17 +198,9 @@ export function QuoteWizard() {
           />
         )}
 
-        {step === 'timeline' && (
-          <StepTimeline
+        {step === 'info' && (
+          <StepInfo
             timeline={wizardState.timeline}
-            onFieldUpdate={onFieldUpdate}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        )}
-
-        {step === 'photo' && (
-          <StepPhoto
             photos={wizardState.photos}
             mlTrainingConsent={wizardState.mlTrainingConsent}
             onFieldUpdate={onFieldUpdate}

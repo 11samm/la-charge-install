@@ -1,12 +1,24 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { Building2, CheckCircle2, Home, HousePlus } from 'lucide-react'
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
 
-import { FormTrustCta } from '@/components/quote/FormTrustCta'
+import { StickyCtaBar } from '@/components/quote/StickyCtaBar'
 import { cn } from '@/lib/utils'
 
-import type { WizardState } from '../types'
+import type { PropertyType, WizardState } from '../types'
+
+const OPTIONS: Array<{
+  value: Exclude<PropertyType, ''>
+  label: string
+  hint: string
+  Icon: typeof Home
+}> = [
+  { value: 'single-family', label: 'Single family home', hint: 'Standalone house', Icon: Home },
+  { value: 'townhouse-condo', label: 'Townhouse / Condo', hint: 'Shared walls or HOA-managed property', Icon: Building2 },
+  { value: 'multi-unit-adu', label: 'Multi-unit / ADU', hint: 'Accessory dwelling unit or multi-unit property', Icon: HousePlus },
+]
 
 function extractFromComponents(
   place: google.maps.places.PlaceResult
@@ -29,13 +41,25 @@ function pickZipFromText(value: string): string | null {
   return m ? m[1] : null
 }
 
-export function StepAddress({
+function propertyHelperText(propertyType: WizardState['propertyType'], zipOk: boolean) {
+  if (propertyType === '' && !zipOk) {
+    return 'Select a property type and enter a valid 5-digit ZIP or address above'
+  }
+  if (propertyType === '') {
+    return 'Select a property type above'
+  }
+  return 'Enter a valid 5-digit ZIP or full address above'
+}
+
+export function StepProperty({
+  propertyType,
   address,
   zipCode,
   onFieldUpdate,
   onNext,
   onBack,
 }: {
+  propertyType: WizardState['propertyType']
   address: string
   zipCode: string
   onFieldUpdate: (p: Partial<WizardState>) => void
@@ -45,8 +69,9 @@ export function StepAddress({
   const inputRef = useRef<HTMLInputElement>(null)
   const acRef = useRef<google.maps.places.Autocomplete | null>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
-  const [attempted, setAttempted] = useState(false)
-  const ready = /^\d{5}$/.test(zipCode)
+
+  const zipOk = /^\d{5}$/.test(zipCode)
+  const canProceed = propertyType !== '' && zipOk
 
   useEffect(() => {
     headingRef.current?.focus()
@@ -95,7 +120,7 @@ export function StepAddress({
     }
   }, [])
 
-  const onChange = (value: string) => {
+  const onAddressChange = (value: string) => {
     const z = pickZipFromText(value)
     const updates: Partial<WizardState> = { address: value }
     if (z) {
@@ -108,20 +133,50 @@ export function StepAddress({
   }
 
   return (
-    <div className="space-y-6 px-4 py-8 sm:px-0 sm:py-12">
+    <div className="flex min-h-[min(100dvh,720px)] flex-col px-4 py-8 sm:min-h-0 sm:px-0 sm:py-12">
+      <div className="flex-1 space-y-6">
       <fieldset>
-        <legend className="sr-only">Where is the property located?</legend>
+        <legend className="sr-only">Property type and address</legend>
         <h2
           ref={headingRef}
           id="step-heading"
           tabIndex={-1}
           className="text-2xl font-bold text-gray-900 [font-family:var(--font-dm-sans),var(--font-heading),ui-sans-serif,system-ui,sans-serif]"
         >
-          Where is the property located?
+          Your property
         </h2>
-        <p className="mt-2 text-base text-gray-500">
-          We use this to check local permits and utility rebates.
-        </p>
+        <p className="mt-2 text-base text-gray-500">Tell us the property type and where it&apos;s located.</p>
+
+        <div className="mt-8 space-y-3" role="group" aria-labelledby="step-heading">
+          {OPTIONS.map(({ value, label, hint, Icon }) => {
+            const selected = propertyType === value
+            return (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => onFieldUpdate({ propertyType: value })}
+                className={cn(
+                  'flex min-h-20 w-full items-center justify-between gap-4 rounded-xl border-2 px-4 py-3 text-left transition-colors',
+                  selected
+                    ? 'border-green-500 bg-green-50 ring-2 ring-green-500/20'
+                    : 'border-gray-200 bg-white hover:border-green-300'
+                )}
+              >
+                <div className="flex min-w-0 items-center gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center text-green-700">
+                    <Icon className="size-6" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <div className="text-lg font-semibold text-gray-900">{label}</div>
+                    <div className="text-sm text-gray-500">{hint}</div>
+                  </div>
+                </div>
+                {selected && <CheckCircle2 className="size-5 shrink-0 text-green-600" aria-hidden />}
+              </button>
+            )
+          })}
+        </div>
 
         <div className="mt-8">
           <label htmlFor="quote-address" className="text-sm font-medium text-gray-700">
@@ -133,50 +188,21 @@ export function StepAddress({
             type="text"
             autoComplete="street-address"
             value={address}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onAddressChange(e.target.value)}
             placeholder="Enter your address or ZIP code"
             className="mt-2 h-14 w-full rounded-xl border border-gray-300 bg-white px-4 text-base text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
           />
           <p className="mt-2 text-sm text-gray-500">We serve the San Fernando Valley and surrounding areas</p>
         </div>
       </fieldset>
-
-      {attempted && !ready && (
-        <p className="text-sm font-medium text-red-600" role="alert">
-          Please enter a valid 5-digit ZIP or a full address so we can check your area.
-        </p>
-      )}
-
-      <FormTrustCta />
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <button
-          type="button"
-          onClick={onBack}
-          className="min-h-12 w-auto self-start rounded-lg border-2 border-gray-200 bg-white px-4 font-medium text-gray-700 transition-colors hover:border-gray-300"
-        >
-          ← Back
-        </button>
-        <div className="flex flex-1 justify-end">
-          <button
-            type="button"
-            aria-disabled={!ready}
-            onClick={() => {
-              if (!ready) {
-                setAttempted(true)
-                return
-              }
-              onNext({})
-            }}
-            className={cn(
-              'h-14 w-full max-w-sm rounded-xl text-base font-semibold transition-colors sm:w-auto sm:min-w-[200px]',
-              ready ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-200 text-gray-400'
-            )}
-          >
-            Next →
-          </button>
-        </div>
       </div>
+
+      <StickyCtaBar
+        canProceed={canProceed}
+        onBack={onBack}
+        helperText={propertyHelperText(propertyType, zipOk)}
+        onNext={() => onNext({})}
+      />
     </div>
   )
 }

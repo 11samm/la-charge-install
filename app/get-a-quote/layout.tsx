@@ -10,12 +10,11 @@ export default function GetAQuoteLayout({ children }: { children: React.ReactNod
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-4 py-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-lg font-bold tracking-tight text-gray-900 [font-family:var(--font-dm-sans),var(--font-heading),ui-sans-serif,system-ui,sans-serif]"
+            className="flex min-w-0 items-center gap-2 text-gray-900 [font-family:var(--font-dm-sans),var(--font-heading),ui-sans-serif,system-ui,sans-serif]"
           >
-            <BrandLogo className="h-9 w-auto shrink-0" priority />
-            {siteConfig.shortName}
+            <BrandLogo className="h-8 w-auto shrink-0" priority />
+            <span className="truncate text-base font-bold tracking-tight whitespace-nowrap">{siteConfig.shortName}</span>
           </Link>
-          <p className="text-right text-xs text-gray-500 sm:text-sm">Licensed · Verified · 4-Hour Response</p>
         </div>
       </header>
 
@@ -31,8 +30,7 @@ export default function GetAQuoteLayout({ children }: { children: React.ReactNod
           <Link href="/privacy-policy" className="text-gray-600 underline underline-offset-2 hover:text-gray-900">
             Privacy Policy
           </Link>{' '}
-          and consent to be contacted by our licensed contractor network. We never share your info with more than 3
-          contractors.
+          and consent to be contacted by our licensed contractor network.
         </p>
       </footer>
     </div>

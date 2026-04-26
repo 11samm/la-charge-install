@@ -2,6 +2,8 @@
 @import 'tw-animate-css';
 
 :root {
+  /* Right pad when the body scrollbar is removed (e.g. mobile menu) so fixed controls don’t shift. */
+  --layout-scrollbar-pad: 0px;
   --font-heading: var(--font-sora);
   --font-body: var(--font-dm-sans);
   --background: oklch(0.99 0 0);
@@ -89,10 +91,15 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: hidden;
+    max-width: 100%;
+    overscroll-behavior-x: none;
   }
 
   h1,

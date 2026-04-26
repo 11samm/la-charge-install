@@ -24,9 +24,12 @@ export function ProgressBar({ step, total }: { step: number; total: number }) {
           )
         })}
       </div>
-      <p className="mt-2 text-center text-sm text-gray-500">
-        Step {step} of {total}
-      </p>
+      <div className="mt-2 flex flex-col gap-0.5 px-0.5 min-[400px]:flex-row min-[400px]:items-center min-[400px]:justify-between">
+        <p className="text-xs text-gray-400">Step {step} of {total}</p>
+        <p className="text-xs font-medium text-gray-500 min-[400px]:text-right">
+          Takes 60 seconds · Get your free estimate instantly
+        </p>
+      </div>
     </div>
   )
 }

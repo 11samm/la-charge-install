@@ -78,7 +78,7 @@ export function ServiceAreaGrid({ compact = false }: ServiceAreaGridProps) {
                       href={`/locations/${area.slug}`}
                       className="inline-flex text-sm font-medium text-primary hover:text-primary/80"
                     >
-                      Explore {area.city}
+                      Explore {area.city} Services
                     </Link>
                   </div>
                 </div>

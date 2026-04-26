@@ -8,8 +8,45 @@ export function Hero() {
     <section className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-muted/50 to-background" />
 
-      <div className="container relative mx-auto px-4 py-16 md:py-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div className="container relative mx-auto px-4">
+        {/* MOBILE HERO — single column, CTA above the fold (hidden at lg+) */}
+        <div className="space-y-5 py-8 lg:hidden">
+          <SocialProofBar />
+
+          <div className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-700">
+            ⭐ 4.9 · Verified Reviews
+          </div>
+
+          <h1 className="font-display text-balance text-3xl font-semibold leading-[1.1] tracking-tight text-foreground">
+            EV Charger Installation, Done Right the First Time.
+          </h1>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 shadow-sm">
+            <span className="relative flex size-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-green-500" />
+            </span>
+            <span>Now booking for Spring 2026 installs</span>
+          </div>
+
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Skip the guesswork — licensed installs with permits and rebates handled.
+          </p>
+
+          <Link
+            id="hero-cta"
+            href="/get-a-quote"
+            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-4 text-base font-extrabold text-white transition-colors hover:bg-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500/50 focus-visible:ring-offset-2"
+          >
+            Get My Free Estimate
+            <ArrowRight className="size-5 shrink-0" strokeWidth={2.5} aria-hidden />
+          </Link>
+
+          <p className="text-center text-xs text-slate-500">No commitment. Licensed contractors only.</p>
+        </div>
+
+        {/* DESKTOP HERO — unchanged two-column layout (lg+ only) */}
+        <div className="hidden items-center gap-12 py-16 md:py-24 lg:grid lg:grid-cols-2 lg:gap-16">
           {/* Left: Content (no primary green on decorative elements) */}
           <div className="space-y-8">
             <SocialProofBar />
@@ -27,10 +64,9 @@ export function Hero() {
             </div>
 
             <p className="max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-              Skip the guesswork. Get a licensed EV charger install with permits pulled, panel capacity verified,
-              and local utility rebates handled for San Fernando Valley homeowners.
+              Skip the guesswork. Get a licensed EV charger install with permits pulled, panel capacity verified, and
+              local utility rebates handled for San Fernando Valley homeowners.
             </p>
-
           </div>
 
           {/* Right: Estimate CTA — single green element: primary button */}

@@ -424,8 +424,8 @@ export function EstimateForm() {
             </FieldGroup>
 
             <p className="text-xs leading-relaxed text-muted-foreground">
-              By submitting, you agree to be contacted by our licensed contractor network about your EV
-              charger or panel upgrade project. We never route your information to more than 3 contractors.
+              By submitting, you agree to be contacted by our licensed contractor network about your EV charger or panel
+              upgrade project.
             </p>
 
             <div className="flex gap-3">

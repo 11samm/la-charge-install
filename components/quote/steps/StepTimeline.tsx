@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { CheckCircle2 } from 'lucide-react'
 
+import { FormTrustCta } from '@/components/quote/FormTrustCta'
 import { cn } from '@/lib/utils'
 
 import type { WizardState } from '../types'
@@ -27,14 +29,16 @@ export function StepTimeline({
   onNext: (p: Partial<WizardState>) => void
   onBack: () => void
 }) {
+  const [attempted, setAttempted] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const canProceed = timeline !== ''
 
   useEffect(() => {
     headingRef.current?.focus()
   }, [])
 
   return (
-    <div className="space-y-6 py-8 px-4 sm:py-12 sm:px-0">
+    <div className="space-y-6 px-4 py-8 sm:px-0 sm:py-12">
       <fieldset>
         <legend className="sr-only">When do you need this done?</legend>
         <h2
@@ -57,36 +61,55 @@ export function StepTimeline({
                 aria-pressed={selected}
                 onClick={() => onFieldUpdate({ timeline: value })}
                 className={cn(
-                  'flex min-h-16 w-full flex-col items-start justify-center rounded-xl border-2 px-4 py-3 text-left transition-colors',
+                  'flex min-h-16 w-full items-center justify-between gap-2 rounded-xl border-2 px-4 py-3 text-left transition-colors',
                   selected
                     ? 'border-green-500 bg-green-50 ring-2 ring-green-500/20'
                     : 'border-gray-200 bg-white hover:border-green-300'
                 )}
               >
-                <span className="text-base font-medium text-gray-900">{label}</span>
-                <span className="text-sm text-gray-500">{hint}</span>
+                <span>
+                  <span className="block text-base font-medium text-gray-900">{label}</span>
+                  <span className="block text-sm text-gray-500">{hint}</span>
+                </span>
+                {selected && <CheckCircle2 className="size-5 shrink-0 text-green-600" aria-hidden />}
               </button>
             )
           })}
         </div>
       </fieldset>
 
-      <button
-        type="button"
-        disabled={timeline === ''}
-        onClick={() => onNext({})}
-        className="h-14 w-full rounded-xl border-2 border-gray-200 bg-white text-base font-semibold text-gray-800 transition-colors hover:border-green-300 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        Next →
-      </button>
+      {attempted && !canProceed && (
+        <p className="text-sm font-medium text-red-600" role="alert">
+          Please select an option to continue.
+        </p>
+      )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <FormTrustCta />
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <button
           type="button"
           onClick={onBack}
           className="min-h-12 w-auto self-start rounded-lg border-2 border-gray-200 bg-white px-4 font-medium text-gray-700 transition-colors hover:border-gray-300"
         >
           ← Back
+        </button>
+        <button
+          type="button"
+          aria-disabled={!canProceed}
+          onClick={() => {
+            if (!canProceed) {
+              setAttempted(true)
+              return
+            }
+            onNext({})
+          }}
+          className={cn(
+            'h-14 w-full self-end rounded-xl text-base font-semibold transition-colors sm:min-w-[200px] sm:max-w-sm',
+            canProceed ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-200 text-gray-400'
+          )}
+        >
+          Next →
         </button>
       </div>
     </div>

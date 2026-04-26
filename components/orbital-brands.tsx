@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import type { ComponentType } from 'react'
+import { useLayoutEffect, useRef, useState, type ComponentType } from 'react'
 
 import { BrandLogo } from '@/components/brand-logo'
 import { AudiLogo } from '@/components/logos/AudiLogo'
@@ -195,32 +195,36 @@ function OrbitRing({
   )
 }
 
-function StaticLogoGrid() {
-  const allLogos = [...utilityLogos, ...evLogos]
-
-  return (
-    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-      {allLogos.map((item) => (
-        <div
-          key={item.name}
-          className={cn(
-            'flex aspect-square items-center justify-center rounded-2xl border shadow-sm',
-            item.sphereClassName
-          )}
-        >
-          <item.Logo className={cn('h-auto max-h-10 w-auto max-w-12', item.logoClassName)} />
-        </div>
-      ))}
-    </div>
-  )
-}
-
 export function OrbitalBrands() {
   const reducedMotion = useReducedMotion()
+  const orbitRef = useRef<HTMLDivElement>(null)
+  const [{ rInner, rOuter, centerPx }, setRing] = useState({
+    rInner: 100,
+    rOuter: 180,
+    centerPx: 92,
+  })
 
-  /** Tighter than original 130/210 so the inner ring sits closer to the center mark. */
-  const rInner = 100
-  const rOuter = 180
+  useLayoutEffect(() => {
+    const el = orbitRef.current
+    if (!el) return
+    const update = () => {
+      const w = el.getBoundingClientRect().width
+      if (w < 8) return
+      // Outer ring: half nodes (~56px) + margin must fit in width/2
+      const nodeHalf = 28
+      const rOut = Math.max(80, Math.min(180, w / 2 - nodeHalf - 8))
+      const rIn = Math.max(52, (rOut * 100) / 180)
+      setRing({
+        rInner: rIn,
+        rOuter: rOut,
+        centerPx: w < 380 ? 72 : 92,
+      })
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   return (
     <section className="border-y border-slate-200/70 bg-slate-50/60 py-20">
@@ -238,48 +242,45 @@ export function OrbitalBrands() {
           </div>
 
           <div className="mx-auto w-full min-w-0 max-w-full shrink-0 self-center max-lg:max-w-md lg:mx-0 lg:w-auto lg:self-center">
-            <div className="max-[480px]:hidden">
-              <div className="mx-auto flex aspect-square w-full max-w-[440px] items-center justify-center sm:max-w-none sm:size-[440px]">
-                <div className="relative h-full w-full">
-                  <div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-slate-400/10"
-                    style={{ width: rInner * 2, height: rInner * 2 }}
-                  />
-                  <div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-slate-400/10"
-                    style={{ width: rOuter * 2, height: rOuter * 2 }}
-                  />
+            <div className="mx-auto flex aspect-square w-full max-w-[440px] items-center justify-center sm:max-w-none sm:size-[440px]">
+              <div ref={orbitRef} className="relative h-full w-full min-h-0 min-w-0">
+                <div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-slate-400/10"
+                  style={{ width: rInner * 2, height: rInner * 2 }}
+                />
+                <div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-slate-400/10"
+                  style={{ width: rOuter * 2, height: rOuter * 2 }}
+                />
 
-                  <OrbitRing
-                    items={utilityLogos}
-                    radius={rInner}
-                    duration={30}
-                    direction={1}
-                    reducedMotion={!!reducedMotion}
-                  />
-                  <OrbitRing
-                    items={evLogos}
-                    radius={rOuter}
-                    duration={45}
-                    direction={-1}
-                    reducedMotion={!!reducedMotion}
-                  />
+                <OrbitRing
+                  items={utilityLogos}
+                  radius={rInner}
+                  duration={30}
+                  direction={1}
+                  reducedMotion={!!reducedMotion}
+                />
+                <OrbitRing
+                  items={evLogos}
+                  radius={rOuter}
+                  duration={45}
+                  direction={-1}
+                  reducedMotion={!!reducedMotion}
+                />
 
-                  <div className="absolute left-1/2 top-1/2 flex size-[92px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-[#22C55E] bg-[#22C55E] p-2 shadow-[0_10px_25px_-5px_rgba(34,197,94,0.45)]">
-                    <span className="inline-flex h-full w-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-full bg-[#22C55E] p-0">
-                      <BrandLogo
-                        variant="inverted"
-                        className="h-10 w-auto max-w-[4.5rem] object-contain"
-                        priority
-                      />
-                    </span>
-                  </div>
+                <div
+                  className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-[#22C55E] bg-[#22C55E] p-2 shadow-[0_10px_25px_-5px_rgba(34,197,94,0.45)]"
+                  style={{ width: centerPx, height: centerPx }}
+                >
+                  <span className="inline-flex h-full w-full min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-full bg-[#22C55E] p-0">
+                    <BrandLogo
+                      variant="inverted"
+                      className="h-9 w-auto max-w-[3.8rem] object-contain sm:h-10 sm:max-w-[4.5rem]"
+                      priority
+                    />
+                  </span>
                 </div>
               </div>
-            </div>
-
-            <div className="min-[481px]:hidden">
-              <StaticLogoGrid />
             </div>
           </div>
         </div>
